@@ -5,6 +5,7 @@ import skfmm
 from scipy.interpolate import RectBivariateSpline
 from optimal_path import optimal_path_runge_kutta
 import optimal_path_cython
+from skimage.graph import route_through_array
 
 from bresenham import get_curve
 
@@ -124,37 +125,48 @@ def test_find_path4():
 
     ### 2. Cython version
     #--------------------------------------------------
-    # xl, yl = optimal_path_cython.optimal_path(gradx_interp, grady_interp, loc_rec, dx)
-    # grid_indx = get_curve(xl, yl, 5)
-    # ix, iy = zip(*grid_indx)
+    xl, yl = optimal_path_cython.optimal_path(gradx_interp, grady_interp, loc_rec, dx)
+    grid_indx = get_curve(xl, yl, 5)
+    ix2, iy2 = zip(*grid_indx)
 
 
     ### 3. A version that I try to use the Bresenham's algorithm on discrete points directly
     ###    There are some problems for the curve path.
     #--------------------------------------------------
     path_points = find_path(-grad_t_x, -grad_t_y, loc_rec, loc_src)
-    ix, iy = zip(*path_points)
+    ix3, iy3 = zip(*path_points)
 
 
     ### 4. Use two travel time addition to get the path.
     ###    The path is not a line, but it's enough for me.
     ###    the parameter "percent" is trival.
     #--------------------------------------------------
-    # phi = -1*np.ones_like(X)
-    # phi[np.logical_and(np.abs(X-loc_rec[0]) <=1, np.abs(Y-loc_rec[1])<=1)] = 1
-    # t2 = skfmm.travel_time(phi, speed)
-    # t_sum = t + t2
-    # t_min = t_sum.min()
-    # percent = 0.003
-    # iy, ix = np.where(t_sum < t_min*(1 + percent))
+    phi2 = -1*np.ones_like(X)
+    phi2[np.logical_and(np.abs(X-loc_rec[0]) <=1, np.abs(Y-loc_rec[1])<=1)] = 1
+    t2 = skfmm.travel_time(phi2, speed)
+    t_sum = t + t2
+    t_min = t_sum.min()
+    percent = 0.003
+    iy4, ix4 = np.where(t_sum < t_min*(1 + percent))
 
+    # 5. skimage.graph.route_through_array
+    loc_src = (10, 10)
+    loc_rec = (90, 70)  # x, y  < -- > y, x
+    slowness = 1./speed
+    grid_indx, weight = route_through_array(slowness, loc_src, loc_rec)
+    iy5_1, ix5_1 = zip(*grid_indx)
+    grid_indx, weight = route_through_array(slowness, loc_src, loc_rec, fully_connected=False)
+    iy5_2, ix5_2 = zip(*grid_indx)
 
 
     import pylab as pl
     pl.figure()
     pl.pcolormesh(X, Y, t)
     pl.colorbar()
-    pl.plot(ix, iy, 'k*', ix1, iy1, 'r*')
+    pl.plot(ix1, iy1, 'k*', label='runge-kutta')
+    pl.plot(ix5_1, iy5_1, 'ro', label='skimage-diagnoal-permit')
+    pl.plot(ix5_2, iy5_2, 'b^', label='skimage-axis-only')
+    pl.legend(loc=4)
     pl.show()
 
     # pl.figure()
