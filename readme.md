@@ -34,3 +34,15 @@ If I need to compute 200 sources and 200 receivers, I only need to compute trave
 
 ![solution 4](./doc/4.png)
 
+## skimage
+
+`skimage.graph.route_through_array(array, start, end, fully_connected=True, geometric=True)[source]`
+
+The parameter `array` is the slowness (1./speed)???
+
+![skimage](./doc/scikit_image.png)
+
+The path is different, why?
+
+I find the path using skimage with axis-only is very similar with solution 3.
+
