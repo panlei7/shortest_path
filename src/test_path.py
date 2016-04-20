@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 import skfmm
 from scipy.interpolate import RectBivariateSpline
-from optimal_path import optimal_path_runge_kutta
+from optimal_path import optimal_path_runge_kutta, optimal_path_euler
 import optimal_path_cython
 from skimage.graph import route_through_array
 
@@ -90,7 +90,7 @@ def test_find_path3():
     np.save('temp.npy', list(path_points))
     assert 0
 
-
+@profile
 def test_find_path4():
     nx = 100
     ny = 100
@@ -120,7 +120,10 @@ def test_find_path4():
     #--------------------------------------------------
     xl, yl = optimal_path_runge_kutta(gradx_interp, grady_interp, loc_rec, dx)
     grid_indx = get_curve(xl, yl, 5)
-    ix1, iy1 = zip(*grid_indx)
+    ix1_1, iy1_1 = zip(*grid_indx)
+    xl, yl = optimal_path_euler(gradx_interp, grady_interp, loc_rec, dx)
+    grid_indx = get_curve(xl, yl, 5)
+    ix1_2, iy1_2 = zip(*grid_indx)
 
 
     ### 2. Cython version
@@ -159,15 +162,16 @@ def test_find_path4():
     iy5_2, ix5_2 = zip(*grid_indx)
 
 
-    import pylab as pl
-    pl.figure()
-    pl.pcolormesh(X, Y, t)
-    pl.colorbar()
-    pl.plot(ix1, iy1, 'k*', label='runge-kutta')
-    pl.plot(ix5_1, iy5_1, 'ro', label='skimage-diagnoal-permit')
-    pl.plot(ix5_2, iy5_2, 'b^', label='skimage-axis-only')
-    pl.legend(loc=4)
-    pl.show()
+    # import pylab as pl
+    # pl.figure()
+    # pl.pcolormesh(X, Y, speed)
+    # pl.colorbar()
+    # pl.plot(ix1_1, iy1_1, 'k*', label='runge-kutta')
+    # # pl.plot(ix5_1, iy5_1, 'ro', label='skimage-diagnoal-permit')
+    # # pl.plot(ix5_2, iy5_2, 'b^', label='skimage-axis-only')
+    # pl.plot(ix1_2, iy1_2, 'ro', label='euler')
+    # pl.legend(loc=4)
+    # pl.show()
 
     # pl.figure()
     # pl.pcolormesh(X, Y, grad_t_x)
