@@ -40,12 +40,13 @@ def optimal_path_runge_kutta(gradx_interp,
             break
     return xl, yl
 
-def optimal_path_euler(gradx_interp,
-                             grady_interp,
-                             starting_point,
-                             dx,
-                             N=100):
 
+def optimal_path_euler(gradx_interp,
+                       grady_interp,
+                       starting_point,
+                       ending_point,
+                       dx,
+                       N=100):
     def get_velocity(position):
         """ return normalized velocity at pos """
         x, y = position
@@ -57,13 +58,13 @@ def optimal_path_euler(gradx_interp,
         return pos - get_velocity(pos) * ds
 
     x = euler_point_update(starting_point, dx)
+    ex, ey = ending_point
     xl, yl = [], []
     for i in range(N):
         xl.append(x[0])
         yl.append(x[1])
         x = euler_point_update(x, dx)
-        distance = ((x[0] - xl[-1])**2 + (x[1] - yl[-1])**2)**0.5
-        if distance < dx * 0.9:
+        distance = ((x[0] - ex)**2 + (x[1] - ey)**2)**0.5
+        if distance < dx * 2:
             break
     return xl, yl
-

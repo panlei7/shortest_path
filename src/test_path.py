@@ -121,7 +121,7 @@ def test_find_path4():
     xl, yl = optimal_path_runge_kutta(gradx_interp, grady_interp, loc_rec, dx)
     grid_indx = get_curve(xl, yl, 5)
     ix1_1, iy1_1 = zip(*grid_indx)
-    xl, yl = optimal_path_euler(gradx_interp, grady_interp, loc_rec, dx)
+    xl, yl = optimal_path_euler(gradx_interp, grady_interp, loc_rec, loc_src, dx)
     grid_indx = get_curve(xl, yl, 5)
     ix1_2, iy1_2 = zip(*grid_indx)
 
