@@ -151,6 +151,8 @@ def test_find_path4():
     t_min = t_sum.min()
     percent = 0.003
     iy4, ix4 = np.where(t_sum < t_min*(1 + percent))
+    t_max = t_sum.max()
+    w = np.exp(-300*(t_sum-t_min)/(t_max-t_min))
 
     # 5. skimage.graph.route_through_array
     loc_src = (10, 10)
@@ -163,6 +165,9 @@ def test_find_path4():
 
 
     # import pylab as pl
+    # pl.figure()
+    # pl.pcolormesh(X, Y, w)
+    # pl.colorbar()
     # pl.figure()
     # pl.pcolormesh(X, Y, speed)
     # pl.colorbar()

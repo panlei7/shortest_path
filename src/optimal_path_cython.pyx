@@ -13,7 +13,8 @@ def optimal_path(gradx_interp,
 
     def get_velocity(double x, double y):
         """ return normalized velocity at pos """
-        cdef double vel[2], norm
+        cdef double vel[2]
+        cdef double norm
         vel[0] = gradx_interp(y, x)[0][0]
         vel[1] = grady_interp(y, x)[0][0]
         norm = (vel[0]**2 + vel[1]**2)**0.5
@@ -23,7 +24,11 @@ def optimal_path(gradx_interp,
 
     def runge_kutta(double x, double y, double ds):
         """ Fourth order Runge Kutta point update """
-        cdef double k1[2], k2[2], k3[2], k4[2], r[2]
+        cdef double k1[2]
+        cdef double k2[2]
+        cdef double k3[2]
+        cdef double k4[2]
+        cdef double r[2]
         k1 = get_velocity(x, y)
         k2 = get_velocity(x - k1[0] / 2.0*ds, y - k1[1]/2.0*ds)
         k3 = get_velocity(x - k2[0] / 2.0*ds, y - k2[1]/2.0*ds)
